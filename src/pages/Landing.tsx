@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { Brain, Sparkles, Target, TrendingUp, Trophy, CheckCircle, ArrowRight, Zap, Shield, Moon, Sun } from "lucide-react";
+import { Brain, Sparkles, Target, TrendingUp, Trophy, CheckCircle, ArrowRight, Zap, Shield, Moon, Sun, Menu, X } from "lucide-react";
 import { motion } from "motion/react";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
@@ -7,6 +8,7 @@ import { useTheme } from "../context/ThemeContext";
 export default function Landing() {
   const { isAuthenticated } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   if (isAuthenticated) {
     return <Navigate to="/app" replace />;
@@ -58,21 +60,21 @@ export default function Landing() {
     <div className="min-h-screen bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/40 dark:from-[#0F1117] dark:via-[#1A1D2E] dark:to-[#0F1117]">
       {/* Navigation */}
       <nav className="bg-white/80 dark:bg-[#1A1D2E]/80 backdrop-blur-lg border-b border-blue-100 dark:border-blue-900/30 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="bg-gradient-to-br from-[#2F2FE4] to-[#162E93] p-2.5 rounded-xl shadow-lg">
                 <Brain className="w-6 h-6 text-white" strokeWidth={2.5} />
               </div>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-[#1A1953] to-[#162E93] dark:from-white dark:to-blue-200 bg-clip-text text-transparent">
+                <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-[#1A1953] to-[#162E93] dark:from-white dark:to-blue-200 bg-clip-text text-transparent">
                   LearnEdge 2.0
                 </h1>
-                <p className="text-xs text-muted-foreground -mt-0.5">AI-Powered Learning</p>
+                <p className="text-[11px] sm:text-xs text-muted-foreground -mt-0.5">AI-Powered Learning</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-3">
               {/* Dark Mode Toggle */}
               <button
                 onClick={toggleTheme}
@@ -95,7 +97,46 @@ export default function Landing() {
                 Get Started
               </Link>
             </div>
+
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen((value) => !value)}
+              className="inline-flex md:hidden items-center justify-center rounded-xl border border-blue-100 dark:border-blue-900/40 bg-white/90 dark:bg-[#1F2436] p-2.5 text-[#1A1953] dark:text-white shadow-sm"
+              aria-expanded={mobileMenuOpen}
+              aria-label="Toggle navigation menu"
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
           </div>
+
+          {mobileMenuOpen && (
+            <div className="mt-4 space-y-3 rounded-2xl border border-blue-100 bg-white/95 p-4 shadow-xl dark:border-blue-900/30 dark:bg-[#171A28]/95 md:hidden">
+              <button
+                onClick={toggleTheme}
+                className="flex w-full items-center justify-between rounded-xl border border-blue-100 px-4 py-3 text-left text-[#1A1953] dark:border-blue-900/30 dark:text-white"
+                title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                <span className="font-medium">Theme</span>
+                {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              </button>
+
+              <Link
+                to="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex w-full items-center justify-center rounded-xl border border-blue-100 px-4 py-3 font-medium text-[#1A1953] transition-colors hover:bg-blue-50 dark:border-blue-900/30 dark:text-white dark:hover:bg-blue-900/20"
+              >
+                Login
+              </Link>
+
+              <Link
+                to="/signup"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-[#2F2FE4] to-[#162E93] px-4 py-3 font-semibold text-white shadow-lg"
+              >
+                Get Started
+              </Link>
+            </div>
+          )}
         </div>
       </nav>
 
