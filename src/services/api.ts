@@ -1,8 +1,4 @@
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL ??
-  "https://learnedge-backend-workers.learnedge-2.workers.dev";
-
-// const API_BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+const API_BASE_URL = (import.meta.env.VITE_API_URL ?? "http://localhost:8000").trim().replace(/\/+$/g, "");
 
 type RequestOptions = Omit<RequestInit, "body"> & {
   body?: unknown;
@@ -21,7 +17,9 @@ async function request<T>(
       : JSON.stringify(options.body);
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const requestUrl = new URL(path.startsWith("/") ? path : `/${path}`, `${API_BASE_URL}/`).toString();
+
+  const response = await fetch(requestUrl, {
     ...options,
     headers: isFormData
       ? {

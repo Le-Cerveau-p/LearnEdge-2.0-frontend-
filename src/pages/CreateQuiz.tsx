@@ -80,6 +80,7 @@ export default function CreateQuiz() {
                 placeholder="Example: JavaScript closures, React hooks, or CSS grid layouts"
                 rows={5}
                 required
+                disabled={isGenerating}
                 className="w-full rounded-xl border border-blue-100 bg-[#F8FAFF] py-3 pl-10 pr-4 text-[#1A1953] outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#2F2FE4] dark:border-blue-900/30 dark:bg-[#1F2937] dark:text-white"
               />
             </div>
@@ -94,6 +95,7 @@ export default function CreateQuiz() {
                 type="file"
                 accept=".txt,.md,.csv,.json,.pdf,.docx"
                 onChange={(event) => setDocumentFile(event.target.files?.[0] ?? null)}
+                disabled={isGenerating}
                 className="block w-full text-sm text-[#1A1953] file:mr-4 file:rounded-lg file:border-0 file:bg-[#2F2FE4] file:px-4 file:py-2 file:font-medium file:text-white hover:file:bg-[#162E93] dark:text-white"
               />
               <p className="mt-2 text-sm text-slate-500 dark:text-slate-300">
@@ -119,11 +121,12 @@ export default function CreateQuiz() {
               <label className="mb-2 block font-medium text-[#1A1953] dark:text-white">
                 Difficulty
               </label>
-              <select
-                value={difficulty}
-                onChange={(event) => setDifficulty(event.target.value as "easy" | "medium" | "hard")}
-                className="w-full rounded-xl border border-blue-100 bg-[#F8FAFF] px-4 py-3 text-[#1A1953] outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#2F2FE4] dark:border-blue-900/30 dark:bg-[#1F2937] dark:text-white"
-              >
+                <select
+                  value={difficulty}
+                  onChange={(event) => setDifficulty(event.target.value as "easy" | "medium" | "hard")}
+                  disabled={isGenerating}
+                  className="w-full rounded-xl border border-blue-100 bg-[#F8FAFF] px-4 py-3 text-[#1A1953] outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#2F2FE4] dark:border-blue-900/30 dark:bg-[#1F2937] dark:text-white"
+                >
                 <option value="easy">Easy</option>
                 <option value="medium">Medium</option>
                 <option value="hard">Hard</option>
@@ -140,6 +143,7 @@ export default function CreateQuiz() {
                 max={20}
                 value={questionCount}
                 onChange={(event) => setQuestionCount(Number(event.target.value))}
+                disabled={isGenerating}
                 className="w-full rounded-xl border border-blue-100 bg-[#F8FAFF] px-4 py-3 text-[#1A1953] outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#2F2FE4] dark:border-blue-900/30 dark:bg-[#1F2937] dark:text-white"
               />
             </div>
@@ -151,6 +155,7 @@ export default function CreateQuiz() {
               <select
                 value={questionType}
                 onChange={(event) => setQuestionType(event.target.value)}
+                disabled={isGenerating}
                 className="w-full rounded-xl border border-blue-100 bg-[#F8FAFF] px-4 py-3 text-[#1A1953] outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#2F2FE4] dark:border-blue-900/30 dark:bg-[#1F2937] dark:text-white"
               >
                 <option value="multiple_choice">Multiple Choice</option>
@@ -173,6 +178,35 @@ export default function CreateQuiz() {
           </button>
         </form>
       </div>
+
+      {isGenerating && (
+        <div
+          role="status"
+          aria-live="polite"
+          aria-label="Generating quiz"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 px-4 backdrop-blur-sm"
+        >
+          <div className="w-full max-w-md rounded-3xl border border-white/15 bg-[#12162A] p-6 text-white shadow-2xl">
+            <div className="flex items-center gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#2F2FE4] to-[#162E93] shadow-lg">
+                <div className="h-7 w-7 animate-spin rounded-full border-4 border-white/25 border-t-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold">Generating your quiz</h2>
+                <p className="mt-1 text-sm text-white/75">
+                  We’re preparing the questions, pulling in your document context, and calling the AI service.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-5 space-y-3 text-sm text-white/70">
+              <p>Uploading context</p>
+              <p>Generating questions</p>
+              <p>Saving quiz results</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
