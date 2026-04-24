@@ -12,6 +12,7 @@ import {
 import { motion } from "motion/react";
 import confetti from "canvas-confetti";
 import { type QuizDetailResponse, type QuizSubmitResponse } from "../services/api";
+import { formatAnswerDisplay } from "../utils/answerFormatting";
 
 type ResultState = {
   quiz?: QuizDetailResponse;
@@ -197,7 +198,7 @@ export default function QuizResult() {
                       <p className="text-sm text-muted-foreground">
                         Your answer: {result.user_answer || "Not answered"} |{" "}
                         {isObjectiveQuiz ? "Correct answer" : "Reference answer"}:{" "}
-                        {result.correct_answer}
+                        {formatAnswerDisplay(result.correct_answer, isObjectiveQuiz)}
                       </p>
                     </div>
                   </div>
