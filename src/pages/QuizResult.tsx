@@ -41,6 +41,8 @@ export default function QuizResult() {
 
   const quiz = state?.quiz ?? storedState?.quiz;
   const submission = state?.submission ?? storedState?.submission;
+  const quizType = quiz?.quiz.question_type.trim().toLowerCase() ?? "";
+  const isObjectiveQuiz = quizType === "objective" || quizType === "multiple_choice";
 
   const score = submission?.score ?? 0;
   const totalQuestions = submission?.total ?? quiz?.questions.length ?? 0;
@@ -193,40 +195,55 @@ export default function QuizResult() {
                         Question {index + 1}: {result.question_text}
                       </h3>
                       <p className="text-sm text-muted-foreground">
-                        Your answer: {result.user_answer || "Not answered"} | Correct answer:{" "}
+                        Your answer: {result.user_answer || "Not answered"} |{" "}
+                        {isObjectiveQuiz ? "Correct answer" : "Reference answer"}:{" "}
                         {result.correct_answer}
                       </p>
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    {options.map((option, optionIndex) => {
-                      const letter = ["A", "B", "C", "D"][optionIndex];
-                      const isCorrect = result.correct_answer === letter;
-                      const isChosen = result.user_answer === letter;
+                  {isObjectiveQuiz ? (
+                    <div className="space-y-2">
+                      {options.map((option, optionIndex) => {
+                        const letter = ["A", "B", "C", "D"][optionIndex];
+                        const isCorrect = result.correct_answer === letter;
+                        const isChosen = result.user_answer === letter;
 
-                      return (
-                        <div
-                          key={letter}
-                          className={`rounded-lg border p-3 ${
-                            isCorrect
-                              ? "border-green-200 bg-green-50 dark:border-green-900/30 dark:bg-green-900/20"
-                              : isChosen
-                                ? "border-red-200 bg-red-50 dark:border-red-900/30 dark:bg-red-900/20"
-                                : "border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900/30"
-                          }`}
-                        >
-                          <span className="font-medium text-[#1A1953] dark:text-white">
-                            {letter}. {option}
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
+                        return (
+                          <div
+                            key={letter}
+                            className={`rounded-lg border p-3 ${
+                              isCorrect
+                                ? "border-green-200 bg-green-50 dark:border-green-900/30 dark:bg-green-900/20"
+                                : isChosen
+                                  ? "border-red-200 bg-red-50 dark:border-red-900/30 dark:bg-red-900/20"
+                                  : "border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900/30"
+                            }`}
+                          >
+                            <span className="font-medium text-[#1A1953] dark:text-white">
+                              {letter}. {option}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/30">
+                      <p className="font-medium text-[#1A1953] dark:text-white">AI marking</p>
+                      <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+                        The grader accepted meaning-based answers, so equivalent wording can still be marked correct.
+                      </p>
+                      {result.ai_feedback && (
+                        <p className="mt-3 text-sm font-medium text-[#1A1953] dark:text-white">
+                          {result.ai_feedback}
+                        </p>
+                      )}
+                    </div>
+                  )}
 
                   <div className="mt-4 rounded-lg border border-blue-100 bg-blue-50 p-4 dark:border-blue-900/30 dark:bg-blue-900/20">
                     <p className="mb-1 font-medium text-[#1A1953] dark:text-white">
-                      Explanation
+                      {isObjectiveQuiz ? "Explanation" : "Model answer"}
                     </p>
                     <p className="text-sm text-gray-700 dark:text-gray-300">
                       {result.explanation}

@@ -12,7 +12,7 @@ export default function CreateQuiz() {
   const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium");
   const [questionCount, setQuestionCount] = useState(10);
-  const [questionType, setQuestionType] = useState("multiple_choice");
+  const [questionType, setQuestionType] = useState<"objective" | "theory" | "german">("objective");
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState("");
 
@@ -31,6 +31,7 @@ export default function CreateQuiz() {
         document: documentFile,
       });
 
+      setDocumentFile(null);
       navigate(`/app/quiz/${response.quiz.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to generate quiz");
@@ -154,14 +155,17 @@ export default function CreateQuiz() {
               </label>
               <select
                 value={questionType}
-                onChange={(event) => setQuestionType(event.target.value)}
+                onChange={(event) => setQuestionType(event.target.value as "objective" | "theory" | "german")}
                 disabled={isGenerating}
                 className="w-full rounded-xl border border-blue-100 bg-[#F8FAFF] px-4 py-3 text-[#1A1953] outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#2F2FE4] dark:border-blue-900/30 dark:bg-[#1F2937] dark:text-white"
               >
-                <option value="multiple_choice">Multiple Choice</option>
-                <option value="theory">Theory</option>
                 <option value="objective">Objective</option>
+                <option value="theory">Theory</option>
+                <option value="german">German Fill-in-the-gaps</option>
               </select>
+              <p className="mt-2 text-xs text-slate-500 dark:text-slate-300">
+                Objective quizzes use multiple choice. Theory quizzes expect short written answers. German quizzes use fill-in-the-gap answers that AI can mark by meaning.
+              </p>
             </div>
           </div>
 

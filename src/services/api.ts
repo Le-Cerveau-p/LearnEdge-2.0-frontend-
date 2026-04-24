@@ -102,6 +102,7 @@ export interface QuizAnswerReview {
   correct_answer: string;
   is_correct: boolean;
   explanation: string;
+  ai_feedback?: string | null;
 }
 
 export interface QuizSubmitResponse {

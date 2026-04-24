@@ -21,6 +21,8 @@ export default function QuizPlayer() {
     () => Object.values(selectedAnswers).filter(Boolean).length,
     [selectedAnswers],
   );
+  const quizType = quiz?.quiz.question_type.trim().toLowerCase() ?? "";
+  const isObjectiveQuiz = quizType === "objective" || quizType === "multiple_choice";
 
   useEffect(() => {
     let alive = true;
@@ -158,32 +160,55 @@ export default function QuizPlayer() {
                 </h2>
               </div>
 
-              <div className="grid gap-3">
-                {ANSWER_OPTIONS.map((option) => {
-                  const value = getQuestionOption(currentQuestion, option);
-                  const isActive = selectedAnswers[currentQuestion.id] === option;
+              {isObjectiveQuiz ? (
+                <div className="grid gap-3">
+                  {ANSWER_OPTIONS.map((option) => {
+                    const value = getQuestionOption(currentQuestion, option);
+                    const isActive = selectedAnswers[currentQuestion.id] === option;
 
-                  return (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() => selectAnswer(currentQuestion.id, option)}
-                      className={`flex items-center gap-3 rounded-xl border p-4 text-left transition-all ${
-                        isActive
-                          ? "border-[#2F2FE4] bg-blue-50 dark:bg-blue-900/20"
-                          : "border-blue-100 bg-[#F8FAFF] hover:border-[#2F2FE4] hover:bg-blue-50 dark:border-blue-900/30 dark:bg-[#111827]"
-                      }`}
-                    >
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white font-bold text-[#2F2FE4] shadow-sm dark:bg-[#1A1D2E]">
-                        {option}
-                      </span>
-                      <span className="flex-1 text-[#1A1953] dark:text-white">
-                        {value}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => selectAnswer(currentQuestion.id, option)}
+                        className={`flex items-center gap-3 rounded-xl border p-4 text-left transition-all ${
+                          isActive
+                            ? "border-[#2F2FE4] bg-blue-50 dark:bg-blue-900/20"
+                            : "border-blue-100 bg-[#F8FAFF] hover:border-[#2F2FE4] hover:bg-blue-50 dark:border-blue-900/30 dark:bg-[#111827]"
+                        }`}
+                      >
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white font-bold text-[#2F2FE4] shadow-sm dark:bg-[#1A1D2E]">
+                          {option}
+                        </span>
+                        <span className="flex-1 text-[#1A1953] dark:text-white">
+                          {value}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <textarea
+                    value={selectedAnswers[currentQuestion.id] ?? ""}
+                    onChange={(event) =>
+                      selectAnswer(currentQuestion.id, event.target.value)
+                    }
+                    rows={6}
+                    placeholder={
+                      quizType === "german"
+                        ? "Type the missing word or phrase here..."
+                        : "Type your answer here..."
+                    }
+                    className="w-full rounded-xl border border-blue-100 bg-[#F8FAFF] px-4 py-3 text-[#1A1953] outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-[#2F2FE4] dark:border-blue-900/30 dark:bg-[#111827] dark:text-white"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    {quizType === "german"
+                      ? "For fill-in-the-gaps, semantic matches and acceptable alternatives can still be marked correct by AI."
+                      : "Write a short answer. The grader will check for meaning, not just exact wording."}
+                  </p>
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
