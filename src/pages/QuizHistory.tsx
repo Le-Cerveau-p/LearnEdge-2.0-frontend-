@@ -13,9 +13,11 @@ import {
 } from "recharts";
 import { useAuth } from "../context/AuthContext";
 import { api, type QuizHistoryItem } from "../services/api";
+import { usePageViewAnalytics } from "../hooks/useAnalytics";
 
 export default function QuizHistory() {
   const { user } = useAuth();
+  usePageViewAnalytics("Quiz History");
   const [history, setHistory] = useState<QuizHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

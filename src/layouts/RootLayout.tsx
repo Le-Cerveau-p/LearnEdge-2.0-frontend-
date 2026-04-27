@@ -1,9 +1,10 @@
 import { Outlet, Link, useLocation, Navigate } from "react-router-dom";
-import { Brain, Home, Plus, History, LogOut, Moon, Sun, User, Menu, X } from "lucide-react";
+import { Brain, Home, Plus, History, LogOut, Moon, Sun, User, Menu, X, Shield } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import LogoutModal from "../components/LogoutModal";
+import { ADMIN_EMAIL } from "../constants/admin";
 
 export default function RootLayout() {
   const location = useLocation();
@@ -11,6 +12,7 @@ export default function RootLayout() {
   const { theme, toggleTheme } = useTheme();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isAdmin = user?.email === ADMIN_EMAIL;
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -76,10 +78,24 @@ export default function RootLayout() {
                     ? "bg-[#2F2FE4] text-white shadow-md"
                     : "text-[#1A1953] dark:text-white hover:bg-blue-50 dark:hover:bg-blue-900/20"
                 }`}
-              >
+                >
                 <History className="w-4 h-4" />
                 <span className="font-medium">History</span>
               </Link>
+
+              {isAdmin && (
+                <Link
+                  to="/app/admin"
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+                    isActive("/app/admin")
+                      ? "bg-[#2F2FE4] text-white shadow-md"
+                      : "text-[#1A1953] dark:text-white hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                  }`}
+                >
+                  <Shield className="w-4 h-4" />
+                  <span className="font-medium">Admin</span>
+                </Link>
+              )}
 
               {/* Dark Mode Toggle */}
               <button
@@ -151,10 +167,24 @@ export default function RootLayout() {
                     ? "bg-[#2F2FE4] text-white shadow-md"
                     : "text-[#1A1953] dark:text-white hover:bg-blue-50 dark:hover:bg-blue-900/20"
                 }`}
-              >
+                >
                 <History className="h-4 w-4" />
                 <span className="font-medium">History</span>
               </Link>
+
+              {isAdmin && (
+                <Link
+                  to="/app/admin"
+                  className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
+                    isActive("/app/admin")
+                      ? "bg-[#2F2FE4] text-white shadow-md"
+                      : "text-[#1A1953] dark:text-white hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                  }`}
+                >
+                  <Shield className="h-4 w-4" />
+                  <span className="font-medium">Admin</span>
+                </Link>
+              )}
 
               <div className="flex items-center justify-between rounded-xl border border-blue-100 px-4 py-3 dark:border-blue-900/30">
                 <div className="flex items-center gap-3">

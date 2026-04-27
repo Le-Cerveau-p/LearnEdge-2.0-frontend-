@@ -13,6 +13,7 @@ import { motion } from "motion/react";
 import confetti from "canvas-confetti";
 import { type QuizDetailResponse, type QuizSubmitResponse } from "../services/api";
 import { formatAnswerDisplay } from "../utils/answerFormatting";
+import { usePageViewAnalytics } from "../hooks/useAnalytics";
 
 type ResultState = {
   quiz?: QuizDetailResponse;
@@ -24,6 +25,7 @@ export default function QuizResult() {
   const location = useLocation();
   const state = location.state as ResultState | null;
   const [storedState, setStoredState] = useState<ResultState | null>(null);
+  usePageViewAnalytics("Quiz Result");
 
   useEffect(() => {
     if (!quizId) {

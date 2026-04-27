@@ -6,6 +6,7 @@ import CreateQuiz from "./pages/CreateQuiz";
 import QuizPlayer from "./pages/QuizPlayer";
 import QuizResult from "./pages/QuizResult";
 import QuizHistory from "./pages/QuizHistory";
+import AdminDashboard from "./pages/AdminDashboard";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
@@ -35,6 +36,7 @@ export const router = createBrowserRouter([
       { path: "quiz/:quizId", Component: QuizPlayer },
       { path: "result/:quizId", Component: QuizResult },
       { path: "history", Component: QuizHistory },
+      { path: "admin", Component: AdminDashboard },
     ],
   },
 ]);

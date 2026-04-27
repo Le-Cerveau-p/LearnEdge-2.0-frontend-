@@ -3,10 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { Brain, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { motion } from "motion/react";
 import { useAuth } from "../context/AuthContext";
+import { usePageViewAnalytics } from "../hooks/useAnalytics";
 
 export default function Login() {
   const navigate = useNavigate();
   const { login, loginWithGoogle } = useAuth();
+  usePageViewAnalytics("Login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);

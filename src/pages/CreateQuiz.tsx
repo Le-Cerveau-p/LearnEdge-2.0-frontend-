@@ -4,10 +4,13 @@ import { Sparkles, FileText } from "lucide-react";
 import { motion } from "motion/react";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
+import { usePageViewAnalytics } from "../hooks/useAnalytics";
+import { trackAnalyticsEvent } from "../utils/analytics";
 
 export default function CreateQuiz() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  usePageViewAnalytics("Create Quiz");
   const [prompt, setPrompt] = useState("");
   const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium");
@@ -29,6 +32,19 @@ export default function CreateQuiz() {
         question_type: questionType,
         user_id: user?.id ?? null,
         document: documentFile,
+      });
+
+      await trackAnalyticsEvent({
+        event_name: "quiz_generated",
+        user_id: user?.id ?? null,
+        user_email: user?.email ?? null,
+        path: "/app/create",
+        metadata: {
+          quiz_id: response.quiz.id,
+          question_type: questionType,
+          number_of_questions: questionCount,
+          has_document: !!documentFile,
+        },
       });
 
       setDocumentFile(null);

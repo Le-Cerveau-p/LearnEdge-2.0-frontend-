@@ -4,11 +4,13 @@ import { Brain, Sparkles, Target, TrendingUp, Trophy, CheckCircle, ArrowRight, Z
 import { motion } from "motion/react";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
+import { usePageViewAnalytics } from "../hooks/useAnalytics";
 
 export default function Landing() {
   const { isAuthenticated } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  usePageViewAnalytics("Landing");
 
   if (isAuthenticated) {
     return <Navigate to="/app" replace />;

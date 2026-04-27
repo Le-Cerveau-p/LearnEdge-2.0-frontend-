@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CheckCircle, ChevronLeft, ChevronRight, Clock, Flag } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useAuth } from "../context/AuthContext";
 import { api, type QuizDetailResponse, type QuizQuestion } from "../services/api";
+import { usePageViewAnalytics } from "../hooks/useAnalytics";
+import { trackAnalyticsEvent } from "../utils/analytics";
 
 const ANSWER_OPTIONS = ["A", "B", "C", "D"] as const;
 
@@ -11,12 +13,14 @@ export default function QuizPlayer() {
   const { quizId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  usePageViewAnalytics("Quiz Player");
   const [quiz, setQuiz] = useState<QuizDetailResponse | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const hasTrackedStart = useRef(false);
   const answeredCount = useMemo(
     () => Object.values(selectedAnswers).filter(Boolean).length,
     [selectedAnswers],
@@ -57,6 +61,30 @@ export default function QuizPlayer() {
     };
   }, [quizId]);
 
+  useEffect(() => {
+    if (!quiz || !quizId) {
+      return;
+    }
+
+    if (hasTrackedStart.current) {
+      return;
+    }
+
+    hasTrackedStart.current = true;
+
+    void trackAnalyticsEvent({
+      event_name: "quiz_started",
+      user_id: user?.id ?? null,
+      user_email: user?.email ?? null,
+      path: `/app/quiz/${quizId}`,
+      metadata: {
+        quiz_id: Number(quizId),
+        question_count: quiz.questions.length,
+        question_type: quiz.quiz.question_type,
+      },
+    });
+  }, [quiz, quizId, user?.id, user?.email]);
+
   const questionCount = quiz?.questions.length ?? 0;
   const currentQuestion = quiz?.questions[currentQuestionIndex];
   const progress = questionCount ? (answeredCount / questionCount) * 100 : 0;
@@ -83,6 +111,19 @@ export default function QuizPlayer() {
           question_id: question.id,
           user_answer: selectedAnswers[question.id] ?? "",
         })),
+      });
+
+      await trackAnalyticsEvent({
+        event_name: "quiz_submitted",
+        user_id: user?.id ?? null,
+        user_email: user?.email ?? null,
+        path: `/app/quiz/${quizId}`,
+        metadata: {
+          quiz_id: Number(quizId),
+          score: submission.score,
+          total: submission.total,
+          question_type: quiz.quiz.question_type,
+        },
       });
 
       const payload = { quiz, submission };

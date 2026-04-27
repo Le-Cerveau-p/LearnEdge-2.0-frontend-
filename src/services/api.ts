@@ -130,6 +130,75 @@ export interface QuizHistoryResponse {
   items: QuizHistoryItem[];
 }
 
+export interface AnalyticsEventPayload {
+  event_name: string;
+  user_id?: number | null;
+  user_email?: string | null;
+  visitor_id: string;
+  session_id: string;
+  path?: string | null;
+  referrer?: string | null;
+  metadata?: Record<string, unknown> | null;
+}
+
+export interface AnalyticsEventResponse {
+  ok: boolean;
+  event_id: number;
+}
+
+export interface AnalyticsTotals {
+  events: number;
+  unique_visitors: number;
+  unique_sessions: number;
+  active_users: number;
+  page_views: number;
+  quiz_generated: number;
+  quiz_started: number;
+  quiz_submitted: number;
+}
+
+export interface AnalyticsDailyActivity {
+  date: string;
+  events: number;
+  unique_visitors: number;
+  page_views: number;
+  quiz_generated: number;
+  quiz_started: number;
+  quiz_submitted: number;
+}
+
+export interface AnalyticsBreakdownItem {
+  event_name: string;
+  count: number;
+}
+
+export interface AnalyticsTopPageItem {
+  path: string;
+  count: number;
+}
+
+export interface AnalyticsRecentEvent {
+  id: number;
+  event_name: string;
+  user_id: number | null;
+  user_email: string | null;
+  visitor_id: string;
+  session_id: string;
+  path: string | null;
+  referrer: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface AnalyticsStatsResponse {
+  window_days: number;
+  totals: AnalyticsTotals;
+  daily_activity: AnalyticsDailyActivity[];
+  event_breakdown: AnalyticsBreakdownItem[];
+  top_pages: AnalyticsTopPageItem[];
+  recent_events: AnalyticsRecentEvent[];
+}
+
 export interface SignupPayload {
   name: string;
   email: string;
@@ -213,4 +282,13 @@ export const api = {
       : "";
     return request<QuizHistoryResponse>(`/quiz/history${query}`);
   },
+  trackAnalyticsEvent: (payload: AnalyticsEventPayload) =>
+    request<AnalyticsEventResponse>("/analytics/event", {
+      method: "POST",
+      body: payload,
+    }),
+  fetchAdminAnalytics: (adminEmail: string, rangeDays = 30) =>
+    request<AnalyticsStatsResponse>(
+      `/analytics/admin/stats?admin_email=${encodeURIComponent(adminEmail)}&range_days=${encodeURIComponent(String(rangeDays))}`,
+    ),
 };
